@@ -8,7 +8,9 @@
       </div>
     </div>
     <div class="dots">
-      <span class="dot" v-for="(item, index) in dots" :class="{active: currentPageIndex === index}"></span>
+      <span class="dot" v-for="(item, index) in dots"
+      :class="{active: currentPageIndex === index}">
+      </span>
     </div>
   </div>
 </template>
@@ -98,6 +100,16 @@ export default {
         },
         click: this.click
       })
+      // better-scroll 在滚动的时候会派发一个事件
+      this.slider.on('scrollEnd', () => {
+        // 利用 better-scroll 封装好的事件 获取index(第几个子元素)
+        let pageIndex = this.slider.getCurrentPage().pageX
+        if (this.loop) {
+          // 循环模式 第一个子元素是copy来的
+          pageIndex -= 1
+        }
+        this.currentPageIndex = pageIndex
+      })
     },
     _initDots() {
       this.dots = new Array(this.children.length)
@@ -148,7 +160,7 @@ export default {
     border-radius: 50%;
     background: #eee;
   }
-  .dot .active{
+  .dots .dot .active{
     width: 20px;
     border-radius: 5px;
     background: #eee;
