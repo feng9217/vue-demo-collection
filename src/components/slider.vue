@@ -57,7 +57,24 @@ export default {
       this._setSliderWidth()
       this._initDots()
       this._initSlider()
-    }, 50)
+      if (this.autoPlay) {
+        this._play()
+      }
+    }, 20)
+
+    // 监听视窗大小改变 给better-scroll更新宽度
+    // 因为用的都是 $refs.dom.clientWidth 的操作 是能够读取最新的宽度值的
+    window.addEventListener('resize', () => {
+      if (!this.slider) {
+        return
+      }
+      // 刷新宽度 但是不能再 width += 2 * sliderWidth
+      // 所以要增加标志位 isResize
+      // 确保只有初始化 loop 时左右加宽度 resize不会增加
+      this._setSliderWidth(true)
+      // better-scroll的api 让其重新计算
+      this.slider.refresh()
+    })
   },
   methods: {
     _getSliderData() {
@@ -66,7 +83,7 @@ export default {
         // console.log(this.sliderData)
       })
     },
-    _setSliderWidth() {
+    _setSliderWidth(isResize) {
       let width = 0
       // console.log(this.$refs.slider.clientWidth)
       let sliderWidth = this.$refs.slider.clientWidth
@@ -78,12 +95,12 @@ export default {
         child.style.width = sliderWidth + 'px'
         width += sliderWidth
       }
-      if (this.loop) {
+      if (this.loop && !isResize) {
         width += 2 * sliderWidth
       }
       this.$refs.sliderGroup.style.width = width + 'px'
-      console.log(this.$refs.slider.clientWidth)
-      console.log(this.$refs.sliderGroup.clientWidth)
+      // console.log(this.$refs.slider.clientWidth)
+      // console.log(this.$refs.sliderGroup.clientWidth)
     },
     _initSlider() {
       this.slider = new BScroll(this.$refs.slider, {
@@ -109,10 +126,29 @@ export default {
           pageIndex -= 1
         }
         this.currentPageIndex = pageIndex
+        // 因为用的是setTimeout 所以每次滚动结束
+        // 都要清除timer 并再滚动下一次达到轮播效果
+        if (this.autoPlay) {
+          clearTimeout(this.timer)
+          this._play()
+        }
       })
     },
     _initDots() {
       this.dots = new Array(this.children.length)
+    },
+    _play() {
+      // 原理就是划到下一张幻灯片 就是修改currentPageIndex
+      let pageIndex = this.currentPageIndex + 1
+      if (this.loop) {
+        pageIndex += 1
+      }
+      // 因为是setTimeout 只会执行一次
+      this.timer = setTimeout(() => {
+        // betterscroll的api goToPage()
+        this.slider.goToPage(pageIndex, 0, 400)
+        // console.log(this.slider)
+      }, this.interval)
     }
   }
 }

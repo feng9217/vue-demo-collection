@@ -19,3 +19,8 @@ npm run build --report
 ```
 
 For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+
+<h2>first demo: slider by betterscroll</h2>
+***
+之前用到的一个 slider组件 由better-scroll实现  
+这次轮播用到的data是来自锤子手机的官网后台数据  
