@@ -196,7 +196,8 @@ export default {
     border-radius: 50%;
     background: #eee;
   }
-  .dots .dot .active{
+  /*active 和 dot 同级的 ...*/
+  .dots .active{
     width: 20px;
     border-radius: 5px;
     background: #eee;
